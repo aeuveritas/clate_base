@@ -47,13 +47,6 @@ RUN git clone https://github.com/Z3Prover/z3.git \
     && cd ../.. \
     && rm -rf z3
 
-ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 10.16.0
-RUN mkdir -p $NVM_DIR && curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
-
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
-
 # Build llvm & clang && ccls
 RUN git clone https://git.llvm.org/git/llvm.git \
     && git clone https://git.llvm.org/git/clang.git llvm/tools/clang \
@@ -67,6 +60,12 @@ RUN git clone https://git.llvm.org/git/llvm.git \
     -DCMAKE_PREFIX_PATH="/llvm/Release;/llvm/Release/tools/clang;/llvm;/llvm/tools/clang" \
     && ninja -C Release install && cd .. \
     && rm -rf ccls && rm -rf llvm
+
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 10.16.0
+RUN mkdir -p $NVM_DIR && curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
 
 # Set running environment
 ENV TERM=xterm-256color
