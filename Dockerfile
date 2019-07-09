@@ -33,7 +33,22 @@ RUN apt update && apt install -y \
     sshpass \
     openssh-server
 
+RUN apt-get install g++-8 -y \
+    && rm /usr/bin/g++ \
+    && ln -s /usr/bin/g++-8 /usr/bin/g++
+
+RUN git clone https://github.com/Z3Prover/z3.git \
+    && cd z3 \
+    && git checkout -b z3-4.8.4 z3-4.8.4 \
+    && python scripts/mk_make.py \
+    && cd build \
+    && make -j15 \
+    && make install \
+    && cd ../.. \
+    && rm -rf z3
+
 ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 10.16.0
 RUN mkdir -p $NVM_DIR && curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
 
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
@@ -52,11 +67,6 @@ RUN git clone https://git.llvm.org/git/llvm.git \
     -DCMAKE_PREFIX_PATH="/llvm/Release;/llvm/Release/tools/clang;/llvm;/llvm/tools/clang" \
     && ninja -C Release install && cd .. \
     && rm -rf ccls && rm -rf llvm
-
-ENV LLVM_VERSION=9.0.0
-RUN mkdir -p /usr/local/clang/$LLVM_VERSION \
-    && cp -a /usr/local/lib/clang/$LLVM_VERSION/include/ /usr/local/clang/$LLVM_VERSION/
-ENV LD_LIBRARY_PATH=/usr/local/lib/:/usr/local/clang/lib:$LD_LIBRARY_PATH
 
 # Set running environment
 ENV TERM=xterm-256color
