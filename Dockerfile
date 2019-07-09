@@ -3,9 +3,9 @@ FROM ubuntu:18.04
 MAINTAINER Karl.Jeong <aeuveritas@gmail.com>
 
 # Install dependencies
-RUN apt update
+RUN apt-get update
 
-RUN apt update && apt install -y \
+RUN apt-get update && apt-get install -y \
     build-essential \
     git \
     curl \
@@ -29,9 +29,7 @@ RUN apt update && apt install -y \
     neovim \
     apt-transport-https \
     ca-certificates \
-    libssl-dev \
-    sshpass \
-    openssh-server
+    libssl-dev
 
 RUN apt-get install g++-8 -y \
     && rm /usr/bin/g++ \
@@ -48,19 +46,19 @@ RUN git clone https://github.com/Z3Prover/z3.git \
     && rm -rf z3
 
 # Build llvm & clang && ccls
-RUN git clone https://git.llvm.org/git/llvm.git \
-    && git clone https://git.llvm.org/git/clang.git llvm/tools/clang \
-    && git clone https://git.llvm.org/git/lld.git llvm/tools/lld \
-    && cd llvm && cmake -H. -BRelease -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DLLVM_TARGETS_TO_BUILD=X86 \
-    && ninja -C Release install && cd .. \
+RUN wget -c http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && tar xvf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && rm -rf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && mv clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04 /llvm \
     && git clone --depth=1 --recursive https://github.com/MaskRay/ccls \
     && cd ccls \
-    && cmake -H. -BRelease -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld \
-    -DCMAKE_PREFIX_PATH="/llvm/Release;/llvm/Release/tools/clang;/llvm;/llvm/tools/clang" \
+    && cmake -H. -BRelease -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/llvm \
     && ninja -C Release install && cd .. \
-    && rm -rf ccls && rm -rf llvm
+    && rm -rf ccls
+ENV PATH=/llvm/bin:$PATH
+ENV LD_LIBRARY_PATH=/llvm/lib:$LD_LIBRARY_PATH
 
+# Node.js
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 10.16.0
 RUN mkdir -p $NVM_DIR && curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
