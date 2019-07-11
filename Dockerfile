@@ -63,7 +63,14 @@ ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 10.16.0
 RUN mkdir -p $NVM_DIR && curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
 ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH      $NVM_DIR/v$NODE_VERSION/bin:$PATH
+
+# PATH for ssh user
+RUN echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/llvm/bin:/usr/local/nvm/versions/node/v10.16.0/bin"' > /etc/environment
+
+# Install ssh tools
+RUN apt-get install -y \
+    sshpass \
+    openssh-server
 
 # Set running environment
 ENV TERM=xterm-256color
