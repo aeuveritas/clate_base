@@ -60,6 +60,7 @@ ENV LD_LIBRARY_PATH=/llvm/lib:$LD_LIBRARY_PATH
 
 # Python
 RUN apt-get install virtualenv
+RUN pip3 install pep8
 
 # Node.js
 ENV NVM_DIR /usr/local/nvm
