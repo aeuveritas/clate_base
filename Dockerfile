@@ -59,15 +59,20 @@ ENV PATH=/llvm/bin:$PATH
 ENV LD_LIBRARY_PATH=/llvm/lib:$LD_LIBRARY_PATH
 
 # Python
-RUN apt-get install virtualenv
+RUN apt-get install virtualenv -y
 RUN pip3 install pep8
 
 # Node.js
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 10.16.0
-RUN mkdir -p $NVM_DIR && curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash
-ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
-ENV PATH=/usr/local/nvm/versions/node/v10.16.0/bin:$PATH
+RUN mkdir -p $NVM_DIR && \
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && \
+    . $NVM_DIR/nvm.sh && \
+    nvm install $NODE_VERSION && \
+    nvm alias default $NODE_VERSION && \
+    nvm use default
+ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # PATH for ssh user
 RUN echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/llvm/bin:/usr/local/nvm/versions/node/v10.16.0/bin"' > /etc/environment
