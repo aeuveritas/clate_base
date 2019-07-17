@@ -58,6 +58,9 @@ RUN wget -c http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubu
 ENV PATH=/llvm/bin:$PATH
 ENV LD_LIBRARY_PATH=/llvm/lib:$LD_LIBRARY_PATH
 
+# Python
+RUN apt-get install virtualenv
+
 # Node.js
 ENV NVM_DIR /usr/local/nvm
 ENV NODE_VERSION 10.16.0
