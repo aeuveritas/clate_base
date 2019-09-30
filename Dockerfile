@@ -46,10 +46,10 @@ RUN git clone https://github.com/Z3Prover/z3.git \
     && rm -rf z3
 
 # Build llvm & clang && ccls
-RUN wget -c http://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
-    && tar xvf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
-    && rm -rf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
-    && mv clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04 /llvm \
+RUN wget -c http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && tar xvf clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && rm -rf clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && mv clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04 /llvm \
     && git clone --depth=1 --recursive https://github.com/MaskRay/ccls \
     && cd ccls \
     && cmake -H. -BRelease -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/llvm \
