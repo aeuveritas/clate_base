@@ -1,6 +1,5 @@
 # Clate
 FROM ubuntu:18.04
-MAINTAINER Karl.Jeong <aeuveritas@gmail.com>
 
 # Install dependencies
 RUN apt-get update
@@ -29,7 +28,8 @@ RUN apt-get update && apt-get install -y \
     neovim \
     apt-transport-https \
     ca-certificates \
-    libssl-dev
+    libssl-dev \
+    unzip
 
 RUN apt-get install g++-8 -y \
     && rm /usr/bin/g++ \
@@ -75,7 +75,7 @@ ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # PATH for ssh user
-RUN echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/llvm/bin:/usr/local/nvm/versions/node/v10.16.0/bin"' > /etc/environment
+RUN echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/llvm/bin:/usr/local/nvm/versions/node/v10.16.0/bin"' > /etc/environment
 
 # Install ssh tools
 RUN apt-get install -y \
