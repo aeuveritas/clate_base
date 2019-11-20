@@ -74,9 +74,6 @@ RUN mkdir -p $NVM_DIR && \
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-# PATH for ssh user
-RUN echo 'PATH="$PATH"' > /etc/environment
-
 # Install ssh tools
 RUN apt-get install -y \
     sshpass \
@@ -87,6 +84,9 @@ ENV TERM xterm-256color
 RUN echo "* hard nofile 773280" >> /etc/security/limits.conf \
     && echo "* soft nofile 773280" >> /etc/security/limits.conf \
     && echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
+
+# PATH for ssh user
+RUN echo "PATH=\"$PATH\"" > /etc/environment
 
 ENTRYPOINT ["/bin/bash"]
 
