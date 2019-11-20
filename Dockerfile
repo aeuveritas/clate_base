@@ -55,8 +55,8 @@ RUN wget -c http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubu
     && cmake -H. -BRelease -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/llvm \
     && ninja -C Release install && cd .. \
     && rm -rf ccls
-ENV PATH=/llvm/bin:$PATH
-ENV LD_LIBRARY_PATH=/llvm/lib:$LD_LIBRARY_PATH
+ENV PATH /llvm/bin:$PATH
+ENV LD_LIBRARY_PATH /llvm/lib:$LD_LIBRARY_PATH
 
 # Python
 RUN apt-get install virtualenv -y
@@ -75,7 +75,7 @@ ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 # PATH for ssh user
-RUN echo 'PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/llvm/bin:/usr/local/nvm/versions/node/v10.16.0/bin"' > /etc/environment
+RUN echo 'PATH="$PATH"' > /etc/environment
 
 # Install ssh tools
 RUN apt-get install -y \
@@ -83,7 +83,7 @@ RUN apt-get install -y \
     openssh-server
 
 # Set running environment
-ENV TERM=xterm-256color
+ENV TERM xterm-256color
 RUN echo "* hard nofile 773280" >> /etc/security/limits.conf \
     && echo "* soft nofile 773280" >> /etc/security/limits.conf \
     && echo "fs.inotify.max_user_watches=524288" >> /etc/sysctl.conf
