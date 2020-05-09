@@ -4,13 +4,14 @@ FROM ubuntu:18.04
 # Install dependencies
 RUN apt-get update
 
+RUN apt-get update
+RUN apt-get install -y software-properties-common
+
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
     curl \
     wget \
-    python3-dev \
-    python3-pip \
     diffutils \
     libboost-all-dev \
     software-properties-common\
@@ -31,25 +32,33 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     unzip
 
-RUN apt-get install g++-8 -y \
-    && rm /usr/bin/g++ \
-    && ln -s /usr/bin/g++-8 /usr/bin/g++
+# GCC-9
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
+    && apt update \
+    && apt install -y gcc-9 g++-9 \
+    && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
 
-RUN git clone https://github.com/Z3Prover/z3.git \
-    && cd z3 \
-    && git checkout -b z3-4.8.4 z3-4.8.4 \
-    && python scripts/mk_make.py \
-    && cd build \
-    && make -j15 \
-    && make install \
-    && cd ../.. \
-    && rm -rf z3
+# Python
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends python3.8 python3.8-dev python3-pip python3-setuptools python3-wheel
+RUN rm /usr/bin/python && ln -s /usr/bin/python3.8 /usr/bin/python
+RUN pip3 install pep8
+
+# RUN git clone https://github.com/Z3Prover/z3.git \
+#     && cd z3 \
+#     && git checkout -b z3-4.8.8 z3-4.8.8 \
+#     && python scripts/mk_make.py \
+#     && cd build \
+#     && make -j8 \
+#     && make install \
+#     && cd ../.. \
+#     && rm -rf z3
 
 # Build llvm & clang && ccls
-RUN wget -c http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
-    && tar xvf clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
-    && rm -rf clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
-    && mv clang+llvm-9.0.0-x86_64-linux-gnu-ubuntu-18.04 /llvm \
+RUN wget -c https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && tar xvf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && rm -rf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz \
+    && mv clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04 /llvm \
     && git clone --depth=1 --recursive https://github.com/MaskRay/ccls \
     && cd ccls \
     && cmake -H. -BRelease -G Ninja -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/llvm \
@@ -58,21 +67,20 @@ RUN wget -c http://releases.llvm.org/9.0.0/clang+llvm-9.0.0-x86_64-linux-gnu-ubu
 ENV PATH /llvm/bin:$PATH
 ENV LD_LIBRARY_PATH /llvm/lib:$LD_LIBRARY_PATH
 
-# Python
-RUN apt-get install virtualenv -y
-RUN pip3 install pep8
-
 # Node.js
 ENV NVM_DIR /usr/local/nvm
-ENV NODE_VERSION 10.16.0
+ENV NODE_VERSION 12.16.3
 RUN mkdir -p $NVM_DIR && \
-    curl https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash && \
+    curl https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash && \
     . $NVM_DIR/nvm.sh && \
     nvm install $NODE_VERSION && \
     nvm alias default $NODE_VERSION && \
     nvm use default
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# Bash
+RUN npm i -g bash-language-server
 
 # Install ssh tools
 RUN apt-get install -y \
