@@ -40,9 +40,8 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test \
 
 # Python
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends python3.8 python3.8-dev python3-pip python3-setuptools python3-wheel
+RUN apt-get install -y --no-install-recommends python3.8 python3.8-dev python3.8-distutils python3-pip python3-setuptools python3-wheel python3.8-venv
 RUN rm /usr/bin/python && ln -s /usr/bin/python3.8 /usr/bin/python
-RUN pip3 install pep8
 
 # RUN git clone https://github.com/Z3Prover/z3.git \
 #     && cd z3 \
